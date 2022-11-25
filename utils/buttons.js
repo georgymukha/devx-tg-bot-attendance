@@ -12,7 +12,7 @@ const backButtonMenuAndLocation = Markup.keyboard([
 ]).resize();
 
 const startCallbackButton = Markup.inlineKeyboard([
-  Markup.button.callback("Старт", "test_callback"),
+  Markup.button.callback("Start", "test_callback"),
 ]).resize();
 
 module.exports = {

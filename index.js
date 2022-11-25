@@ -14,7 +14,7 @@ const { setupBot } = require("./bot");
     await mongoose.connect(process.env.BD_TOKEN, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
-      dbName: "tgBot",
+      dbName: "attendance",
     });
     // запуск самого бота
     await setupBot().launch();
@@ -25,6 +25,6 @@ const { setupBot } = require("./bot");
         */
     console.log("</ Бот успешно запущен >");
   } catch (error) {
-    console.log("Ошибка запуска: ", error);
+    console.log("Error on start:\n", error);
   }
 })();

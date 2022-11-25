@@ -1,10 +1,11 @@
 const { Scenes } = require("telegraf");
 const { backMenu } = require("./commands");
-const { getWeatherLocationCoord } = require("../services/getWeatherLocation");
+const {
+  getWeatherLocationCoord,
+  getMarkLocationCoord,
+} = require("../services/getWeatherLocation");
 const { backButtonMenuAndLocation } = require("../utils/buttons");
 const { CMD_TEXT } = require("../config/consts");
-const { createImageChartWeather } = require("../services/weatherChart");
-const { definitionAverageWeatherHours } = require("../utils/average");
 
 // передаём конструктору название сцены и шаги сцен
 const whatLocationScene = new Scenes.BaseScene("location");
@@ -22,7 +23,7 @@ whatLocationScene.on("location", async (ctx) => {
     const msg = ctx.message;
     if (!msg.reply_to_message)
       return ctx.reply("Click on the button below, please!");
-    ctx.reply("💫 Ищу в базе данных погоду");
+    ctx.reply("💫 Checking your location");
     console.log(ctx);
     console.log(msg);
 
@@ -31,28 +32,12 @@ whatLocationScene.on("location", async (ctx) => {
 
     // получаем нашу погоду по координатам
     const data = await getWeatherLocationCoord({ latitude, longitude });
+    const mark = await getMarkLocationCoord({ latitude, longitude });
+    console.log(mark);
 
-    // получаем наши перебранные значения для графика
-    const averageTemp = await definitionAverageWeatherHours({
-      time: data.hourly.time,
-      temp: data.hourly.temperature_2m,
-    });
-
-    // приходит буффер - изображение графика погоды
-    const file = await createImageChartWeather({
-      label: "Сводка погоды на неделю",
-      time: averageTemp.days,
-      temp: averageTemp.tempDays,
-    });
-    // ctx.reply(`Сейчас у тебя ${data.current_weather.temperature}${data.hourly_units.temperature_2m}\nВетер ${data.current_weather.windspeed} ${data.hourly_units.windspeed_10m}`)
     // отвечаем сообщением о погоде
-    ctx.replyWithPhoto(
-      {
-        source: file,
-      },
-      {
-        caption: `Сейчас у тебя ${data.current_weather.temperature}${data.hourly_units.temperature_2m}\nВетер ${data.current_weather.windspeed} ${data.hourly_units.windspeed_10m}`,
-      }
+    ctx.reply(
+      `Сейчас у тебя ${data.current_weather.temperature}${data.hourly_units.temperature_2m}\nВетер ${data.current_weather.windspeed} ${data.hourly_units.windspeed_10m}`
     );
   } catch (error) {
     console.log(error);
