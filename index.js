@@ -11,11 +11,21 @@ const { setupBot } = require("./bot");
 (async function () {
   try {
     // подключение к БД
-    await mongoose.connect(process.env.BD_TOKEN, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      dbName: "attendance",
-    });
+    await mongoose
+      .connect(process.env.BD_TOKEN, {
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+        dbName: "attendance",
+      })
+      .then(
+        () => {
+          console.log("</ Database was connected >");
+        },
+
+        (err) => {
+          console.log(`</ Database connection error >\n${err}`);
+        }
+      );
     // запуск самого бота
     await setupBot().launch();
     // другая реализация запуска
@@ -23,8 +33,8 @@ const { setupBot } = require("./bot");
         const bot = setupBot();
         await bot.launch()
         */
-    console.log("</ Бот успешно запущен >");
+    console.log("</ Bot was started successfully >");
   } catch (error) {
-    console.log("Error on start:\n", error);
+    console.log("</ Error on start:\n >", error);
   }
 })();

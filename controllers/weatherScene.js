@@ -3,6 +3,7 @@ const { backMenu } = require("./commands");
 const {
   getWeatherLocationCoord,
   getMarkLocationCoord,
+  newUser,
 } = require("../services/getWeatherLocation");
 const { backButtonMenuAndLocation } = require("../utils/buttons");
 const { CMD_TEXT } = require("../config/consts");
@@ -24,24 +25,24 @@ whatLocationScene.on("location", async (ctx) => {
     if (!msg.reply_to_message)
       return ctx.reply("Click on the button below, please!");
     ctx.reply("💫 Checking your location");
-    console.log(ctx);
-    console.log(msg);
 
     // деструктуризация объектов
     const { latitude, longitude } = msg.location;
+    const id = msg.from.id;
 
     // получаем нашу погоду по координатам
     const data = await getWeatherLocationCoord({ latitude, longitude });
     const mark = await getMarkLocationCoord({ latitude, longitude });
-    console.log(mark);
+    const user = await newUser({ id, latitude, longitude });
 
     // отвечаем сообщением о погоде
-    ctx.reply(
-      `Сейчас у тебя ${data.current_weather.temperature}${data.hourly_units.temperature_2m}\nВетер ${data.current_weather.windspeed} ${data.hourly_units.windspeed_10m}`
+    await ctx.reply(
+      `Сейчас у тебя ${data.current_weather.temperature}${data.hourly_units.temperature_2m}\nВетер ${data.current_weather.windspeed} ${data.hourly_units.windspeed_10m} \n`
     );
+    // await ctx.reply(user);
   } catch (error) {
     console.log(error);
-    ctx.reply("Упс... Произошла какая - то ошибка");
+    ctx.reply("Something went wrong...");
   }
 });
 
